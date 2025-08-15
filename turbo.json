@@ -72,8 +72,7 @@
     "lint": {},
     "dev": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["codegen"]
+      "persistent": true
     },
     "watch": {
       "cache": false,

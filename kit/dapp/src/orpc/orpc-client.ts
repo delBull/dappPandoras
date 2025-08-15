@@ -77,6 +77,10 @@ const getORPCClient = createIsomorphicFn()
           ...options,
           // Include cookies in all requests for authentication
           credentials: "include",
+          headers: {
+            ...options?.headers,
+            "x-hasura-admin-secret": process.env.SETTLEMINT_HASURA_ADMIN_SECRET || "hasura",
+          },
         });
       },
       customJsonSerializers: [

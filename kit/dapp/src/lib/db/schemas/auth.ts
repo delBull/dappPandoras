@@ -11,6 +11,7 @@ import type { Address } from "viem";
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  dummy_column: text("dummy_column"), // Added dummy column
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified")
     .$defaultFn(() => !1)

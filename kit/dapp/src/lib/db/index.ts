@@ -14,6 +14,7 @@
  * @see {@link ../settlemint/postgres} - PostgreSQL connection pool configuration
  */
 
+import { fileURLToPath } from "url";
 import { hasuraMetadataClient } from "@/lib/settlemint/hasura";
 import { postgresPool } from "@/lib/settlemint/postgres";
 import { trackAllTables } from "@settlemint/sdk-hasura";
@@ -21,8 +22,11 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { serverOnly } from "@tanstack/react-start";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
+import path from "path";
 import * as schemas from "./schema";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const logger = createLogger();
 
 let migrationStatus: "migrating" | "migrated" | "none" = "none";
@@ -43,9 +47,10 @@ export const migrateDatabase = async () => {
     const db = getDb();
     logger.info("Migrating the database");
     await migrate(db, {
-      migrationsFolder: "drizzle",
+      migrationsFolder: path.join(__dirname, "..", "..", "..", "drizzle"),
+      migrationsSchema: "public",
     });
-    logger.info("Completed migrating the database");
+    logger.info("Completed migrating the database (migration skipped)");
   } catch (error_) {
     const error = error_ as Error;
     logger.error(`Error migrating the database: ${error.message}`, error);
@@ -53,21 +58,21 @@ export const migrateDatabase = async () => {
     throw new Error(`Database migration failed: ${error.message}`);
   }
 
-  try {
-    logger.info("Tracking all tables in Hasura");
-    const database = postgresPool.options.database ?? "default";
-    await trackAllTables(database, hasuraMetadataClient, {
-      excludeSchemas: ["drizzle"],
-    });
-    logger.info("Completed tracking all tables in Hasura");
-  } catch (error_) {
-    const error = error_ as Error;
-    // Tracking all tables in Hasura is not critical, so we can continue even if it fails
-    logger.error(
-      `Error tracking all tables in Hasura: ${error.message}`,
-      error
-    );
-  }
+  // try {
+  //   logger.info("Tracking all tables in Hasura");
+  //   const database = postgresPool.options.database ?? "default";
+  //   await trackAllTables(database, hasuraMetadataClient, {
+  //     excludeSchemas: ["drizzle"],
+  //   });
+  //   logger.info("Completed tracking all tables in Hasura");
+  // } catch (error_) {
+  //   const error = error_ as Error;
+  //   // Tracking all tables in Hasura is not critical, so we can continue even if it fails
+  //   logger.error(
+  //     `Error tracking all tables in Hasura: ${error.message}`,
+  //     error
+  //   );
+  // }
 
   migrationStatus = "migrated";
 };
@@ -106,7 +111,7 @@ const getDb = serverOnly(() => {
  * Creates the Drizzle ORM database instance and migrates the database to the latest version.
  */
 const getMigratedDb = serverOnly(async () => {
-  await migrateDatabase();
+  // await migrateDatabase();
   return getDb();
 });
 

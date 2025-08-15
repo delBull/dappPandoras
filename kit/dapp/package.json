@@ -29,6 +29,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.config.integration.ts",
+    "dotenv:check": "ts-node --esm ./scripts/dotenv-check.ts",
     "route:gen": "tsr generate"
   },
   "devDependencies": {

@@ -65,6 +65,7 @@
     "postdev:reset": "bun run dev:up",
     "artifacts": "turbo run artifacts",
     "extract-env": "bun run tools/extract-env.ts",
+    "dotenv:check": "bun tools/check-env.ts",
     "db:studio": "turbo run db:studio"
   },
   "dependencies": {
